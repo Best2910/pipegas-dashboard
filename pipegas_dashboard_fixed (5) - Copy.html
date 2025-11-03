@@ -25,8 +25,39 @@
     }catch{}
   })();
 </script>
+<!-- ===== Viewer Mode Detection ===== -->
+<script>
+  // ถ้าเปิดจาก GitHub Pages เช่น best2910.github.io จะเข้าโหมด Viewer
+  const isViewer = window.location.hostname.includes("github.io");
+  if (isViewer) {
+    document.documentElement.setAttribute("data-mode", "viewer");
+  } else {
+    document.documentElement.setAttribute("data-mode", "admin");
+  }
+</script>
+
+
 
 <style>
+/* ===== Viewer Mode UI Restriction ===== */
+[data-mode="viewer"] #btnSerial,
+[data-mode="viewer"] #btnClear,
+[data-mode="viewer"] #btnMute,
+[data-mode="viewer"] #volRange,
+[data-mode="viewer"] #demo,
+[data-mode="viewer"] .skin-btn {
+  pointer-events: none;   /* กดไม่ได้ */
+  opacity: 0.4;           /* จางลง */
+  filter: grayscale(0.8); /* เทา */
+}
+
+[data-mode="viewer"] #status::after {
+  content: " (Viewer Mode)";
+  font-size: 11px;
+  opacity: 0.8;
+  margin-left: 6px;
+}
+
   /* ====== THEME (Dark / Light via [data-theme]) — คงโครงสร้างเดิม ====== */
   :root{
     --scale:1; --dial:168px; --ring-w:12; --gap:22px;
@@ -1385,6 +1416,17 @@ btnClear.addEventListener('click', ()=>{
   });
 })();
 
+
+/* ===== Disable Controls when Viewer Mode ===== */
+if (document.documentElement.getAttribute("data-mode") === "viewer") {
+  console.log("🔒 Viewer Mode: disable serial/demo controls");
+  const disableIds = ["btnSerial", "btnClear", "btnMute", "demo"];
+  disableIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = true;
+  });
+  document.getElementById("status").textContent = "ดูข้อมูลเรียลไทม์ (Viewer Mode)";
+}
 /* ===== Queue & Sheet (เดิม) ===== */
 const LS_KEY = 'sheet_queue_log';
 let queue = [];
